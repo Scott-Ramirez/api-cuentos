@@ -1,20 +1,37 @@
+
 import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, Logger, ClassSerializerInterceptor } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { setupSwagger } from './swagger.config';
 import { AppModule } from './app.module';
+
+function parseCorsOrigins(envOrigins?: string): (string | RegExp)[] {
+  if (!envOrigins) {
+    // Default to localhost for dev
+    return [
+      'http://localhost:3001',
+      'http://localhost:3000',
+      /https:\/\/.*\.ngrok-free\.app$/,
+      /https:\/\/.*\.ngrok\.io$/,
+    ];
+  }
+  return envOrigins.split(',').map(origin => {
+    const trimmed = origin.trim();
+    if (trimmed.startsWith('regex:')) {
+      // Allow regex: prefix for advanced use
+      return new RegExp(trimmed.replace('regex:', ''));
+    }
+    return trimmed;
+  });
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const logger = new Logger('Bootstrap');
 
-  // Enable CORS
+  // Enable CORS with dynamic origins from env
+  const corsOrigins = parseCorsOrigins(process.env.CORS_ORIGINS);
   app.enableCors({
-    origin: [
-      'http://localhost:3001', 
-      'http://localhost:3000',
-      /https:\/\/.*\.ngrok-free\.app$/, // Permite cualquier URL de ngrok
-      /https:\/\/.*\.ngrok\.io$/, // Permite URLs de ngrok antiguas también
-    ],
+    origin: corsOrigins,
     credentials: true,
   });
 
@@ -31,36 +48,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // Swagger Configuration
-  const config = new DocumentBuilder()
-    .setTitle('StoryForge API')
-    .setDescription(
-      '📚 API para plataforma de creación de cuentos personales con autenticación, subida de imágenes, likes y comentarios.\n\n' +
-        '## Características:\n' +
-        '- ✅ Autenticación JWT\n' +
-        '- ✅ Gestión de cuentos con capítulos\n' +
-        '- ✅ Sistema de likes y comentarios\n' +
-        '- ✅ Subida de imágenes (avatares, portadas, ilustraciones)\n' +
-        '- ✅ Tags y categorización\n' +
-        '- ✅ Publicación de cuentos (draft/published)\n\n'
-    )
-    .setVersion('1.0')
-    .addTag('Auth', 'Autenticación y registro de usuarios')
-    .addTag('Stories', 'Gestión de cuentos y capítulos')
-    .addTag('Likes', 'Sistema de likes en cuentos')
-    .addTag('Comments', 'Sistema de comentarios')
-    .addTag('Upload', 'Subida de imágenes')
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    customSiteTitle: 'StoryForge API Docs',
-    customfavIcon: 'https://nestjs.com/img/logo-small.svg',
-    customCss: `
-      .topbar-wrapper img { content:url('https://nestjs.com/img/logo-small.svg'); width:80px; height:auto; }
-      .swagger-ui .topbar { background-color: #1a1a1a; }
-    `,
-  });
+  setupSwagger(app);
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
