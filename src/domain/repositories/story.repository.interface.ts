@@ -13,6 +13,7 @@ export interface IStoryRepository {
   findByUserId(userId: number): Promise<Story[]>;
   update(id: number, story: Partial<Story>): Promise<Story>;
   delete(id: number): Promise<void>;
+  deleteByUserId(userId: number): Promise<void>;
   incrementViews(id: number): Promise<void>;
   
   // Chapters

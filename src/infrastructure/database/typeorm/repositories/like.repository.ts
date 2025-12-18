@@ -49,4 +49,8 @@ export class LikeRepository implements ILikeRepository {
       where: { story_id: storyId },
     });
   }
+
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.repository.delete({ user_id: userId });
+  }
 }

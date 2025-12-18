@@ -7,6 +7,7 @@ export interface INotificationRepository {
   getUnreadCount(userId: number): Promise<number>;
   markAsRead(id: number): Promise<void>;
   markAllAsRead(userId: number): Promise<void>;
+  deleteByUserId(userId: number): Promise<void>;
 }
 
 export const INotificationRepository = Symbol('INotificationRepository');

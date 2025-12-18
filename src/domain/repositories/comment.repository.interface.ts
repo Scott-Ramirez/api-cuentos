@@ -6,6 +6,7 @@ export interface ICommentRepository {
   findByStoryId(storyId: number): Promise<StoryComment[]>;
   update(id: number, comment: Partial<StoryComment>): Promise<StoryComment>;
   delete(id: number): Promise<void>;
+  deleteByUserId(userId: number): Promise<void>;
   getCommentsCount(storyId: number): Promise<number>;
 }
 

@@ -6,6 +6,7 @@ export interface ILikeRepository {
   hasUserLiked(userId: number, storyId: number): Promise<boolean>;
   getLikesByStoryId(storyId: number): Promise<StoryLike[]>;
   getLikesCount(storyId: number): Promise<number>;
+  deleteByUserId(userId: number): Promise<void>;
 }
 
 export const ILikeRepository = Symbol('ILikeRepository');

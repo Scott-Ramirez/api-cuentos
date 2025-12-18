@@ -49,4 +49,8 @@ export class NotificationRepository implements INotificationRepository {
       { is_read: true },
     );
   }
+
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.notificationRepository.delete({ user_id: userId });
+  }
 }

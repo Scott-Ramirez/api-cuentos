@@ -46,6 +46,10 @@ export class CommentRepository implements ICommentRepository {
     await this.repository.delete(id);
   }
 
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.repository.delete({ user_id: userId });
+  }
+
   async getCommentsCount(storyId: number): Promise<number> {
     return await this.repository.count({
       where: { story_id: storyId },

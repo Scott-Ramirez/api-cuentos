@@ -85,6 +85,10 @@ export class StoryRepository implements IStoryRepository {
     await this.storyRepo.delete(id);
   }
 
+  async deleteByUserId(userId: number): Promise<void> {
+    await this.storyRepo.delete({ user_id: userId });
+  }
+
   async incrementViews(id: number): Promise<void> {
     await this.storyRepo.increment({ id }, 'views_count', 1);
   }
