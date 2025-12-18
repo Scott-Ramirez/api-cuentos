@@ -8,6 +8,7 @@ import { AuthModule } from './application/modules/auth.module';
 import { StoriesModule } from './application/modules/stories.module';
 import { UploadModule } from './application/modules/upload.module';
 import { NotificationsModule } from './application/modules/notifications.module';
+import { VersionController } from './presentation/controllers/version.controller';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { NotificationsModule } from './application/modules/notifications.module'
     UploadModule,
     NotificationsModule,
   ],
-  controllers: [],
+  controllers: [VersionController],
   providers: [],
 })
 export class AppModule { }
