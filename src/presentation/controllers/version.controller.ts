@@ -14,7 +14,8 @@ export class VersionController {
       return {
         version: packageJson.version,
         name: packageJson.name,
-        maintenance: process.env.MAINTENANCE_MODE === 'true',
+        maintenanceWarning: process.env.MAINTENANCE_WARNING === 'true',
+        maintenanceActive: process.env.MAINTENANCE_ACTIVE === 'true',
         lastUpdate: new Date().toISOString(),
         features: [
           'Gestión de historias',
@@ -27,9 +28,10 @@ export class VersionController {
     } catch (error) {
       console.error('Error reading package.json:', error);
       return {
-        version: '0.0.1',
+        version: '0.8.0',
         name: 'probar_api_new_server',
-        maintenance: process.env.MAINTENANCE_MODE === 'true',
+        maintenanceWarning: process.env.MAINTENANCE_WARNING === 'true',
+        maintenanceActive: process.env.MAINTENANCE_ACTIVE === 'true',
         lastUpdate: new Date().toISOString(),
         features: []
       };
