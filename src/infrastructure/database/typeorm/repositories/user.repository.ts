@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { IUserRepository } from '../../../../domain/repositories/user.repository.interface';
-import { User } from '../../../../domain/entities/user.entity';
+import { User, UserRole } from '../../../../domain/entities/user.entity';
 import { UserSchema } from '../entities/user.schema';
 
 @Injectable()
@@ -12,21 +12,39 @@ export class UserRepository implements IUserRepository {
     private readonly repository: Repository<UserSchema>,
   ) {}
 
+  private mapSchemaToEntity(schema: UserSchema): User {
+    return {
+      id: schema.id,
+      email: schema.email,
+      username: schema.username,
+      password: schema.password,
+      avatar: schema.avatar,
+      bio: schema.bio,
+      role: schema.role as UserRole,
+      created_at: schema.created_at,
+      updated_at: schema.updated_at,
+    } as User;
+  }
+
   async create(user: Partial<User>): Promise<User> {
     const newUser = this.repository.create(user);
-    return await this.repository.save(newUser);
+    const saved = await this.repository.save(newUser);
+    return this.mapSchemaToEntity(saved);
   }
 
   async findById(id: number): Promise<User | null> {
-    return await this.repository.findOne({ where: { id } });
+    const schema = await this.repository.findOne({ where: { id } });
+    return schema ? this.mapSchemaToEntity(schema) : null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.repository.findOne({ where: { email } });
+    const schema = await this.repository.findOne({ where: { email } });
+    return schema ? this.mapSchemaToEntity(schema) : null;
   }
 
   async findByUsername(username: string): Promise<User | null> {
-    return await this.repository.findOne({ where: { username } });
+    const schema = await this.repository.findOne({ where: { username } });
+    return schema ? this.mapSchemaToEntity(schema) : null;
   }
 
   async update(id: number, user: Partial<User>): Promise<User> {

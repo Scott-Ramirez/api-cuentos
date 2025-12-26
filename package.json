@@ -1,6 +1,6 @@
 {
   "name": "probar_api_new_server",
-  "version": "0.11.1",
+  "version": "0.12.0",
   "description": "",
   "author": "",
   "private": true,
@@ -22,7 +22,9 @@
     "migration:generate": "npm run build && npm run typeorm -- migration:generate -d dist/data-source.js",
     "migration:run": "npm run build && npm run typeorm -- migration:run -d dist/data-source.js",
     "migration:revert": "npm run build && npm run typeorm -- migration:revert -d dist/data-source.js",
-    "migration:create": "typeorm-ts-node-commonjs migration:create"
+    "migration:create": "typeorm-ts-node-commonjs migration:create",
+    "make-admin": "npm run build && node dist/scripts/make-admin.js",
+    "create-admin": "npm run build && node dist/scripts/create-admin.js"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

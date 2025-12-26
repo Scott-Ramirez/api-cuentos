@@ -109,7 +109,7 @@ export class AuthController {
       loginDto.password,
     );
 
-    const payload = { sub: user.id, email: user.email, username: user.username };
+    const payload = { sub: user.id, email: user.email, username: user.username, role: user.role };
     const access_token = this.jwtService.sign(payload);
 
     return {

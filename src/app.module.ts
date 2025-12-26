@@ -8,7 +8,8 @@ import { AuthModule } from './application/modules/auth.module';
 import { StoriesModule } from './application/modules/stories.module';
 import { UploadModule } from './application/modules/upload.module';
 import { NotificationsModule } from './application/modules/notifications.module';
-import { VersionController } from './presentation/controllers/version.controller';
+import { ReleaseNotesModule } from './application/modules/release-notes.module';
+import { AdminModule } from './application/modules/admin.module';
 
 @Module({
   imports: [
@@ -28,8 +29,10 @@ import { VersionController } from './presentation/controllers/version.controller
     StoriesModule,
     UploadModule,
     NotificationsModule,
+    ReleaseNotesModule,
+    AdminModule,
   ],
-  controllers: [VersionController],
+  controllers: [],
   providers: [],
 })
 export class AppModule { }

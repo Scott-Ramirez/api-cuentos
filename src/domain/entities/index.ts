@@ -4,3 +4,6 @@ export * from './chapter.entity';
 export * from './story-tag.entity';
 export * from './story-like.entity';
 export * from './story-comment.entity';
+export * from './notification.entity';
+export * from './release-note.entity';
+export * from './system-setting.entity';

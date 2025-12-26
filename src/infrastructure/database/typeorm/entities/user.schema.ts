@@ -30,6 +30,9 @@ export class UserSchema {
   @Column({ type: 'text', nullable: true })
   bio: string;
 
+  @Column({ type: 'enum', enum: ['admin', 'user'], default: 'user' })
+  role: string;
+
   @OneToMany('StorySchema', 'user')
   stories: any[];
 
