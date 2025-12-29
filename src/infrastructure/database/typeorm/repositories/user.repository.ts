@@ -57,4 +57,8 @@ export class UserRepository implements IUserRepository {
   async delete(id: number): Promise<void> {
     await this.repository.delete(id);
   }
+
+  async count(): Promise<number> {
+    return await this.repository.count();
+  }
 }

@@ -14,7 +14,9 @@ import { ReleaseNoteService } from '../use-cases/release-notes/release-note.serv
 import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/release-note.repository';
 import { MakeAdminCommand } from '../commands/make-admin.command';
 import { IStoryRepository } from '../../domain/repositories/story.repository.interface';
+import { IUserRepository } from '../../domain/repositories/user.repository.interface';
 import { StoryRepository } from '../../infrastructure/database/typeorm/repositories/story.repository';
+import { UserRepository } from '../../infrastructure/database/typeorm/repositories/user.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SystemSettingSchema, ReleaseNoteSchema, UserSchema, StorySchema, ChapterSchema, StoryTagSchema])],
@@ -32,8 +34,12 @@ import { StoryRepository } from '../../infrastructure/database/typeorm/repositor
       useClass: TypeOrmReleaseNoteRepository,
     },
     {
-      provide: IStoryRepository,
+      provide: 'IStoryRepository',
       useClass: StoryRepository,
+    },
+    {
+      provide: 'IUserRepository',
+      useClass: UserRepository,
     },
   ],
   exports: [AdminService, ReleaseNoteService, MakeAdminCommand],

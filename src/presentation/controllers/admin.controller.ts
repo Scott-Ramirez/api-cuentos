@@ -7,9 +7,11 @@ import {
   Param,
   Query,
   UseGuards,
+  Request,
+  Put,
 } from '@nestjs/common';
 import { AdminService } from '../../application/use-cases/admin/admin.service';
-import { UpdateSystemSettingDto, MaintenanceControlDto } from '../../application/dto/system-admin.dto';
+import { UpdateSystemSettingDto, MaintenanceControlDto, UpdateAdminProfileDto, ChangePasswordDto } from '../../application/dto/system-admin.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AdminGuard } from '../guards/admin.guard';
 
@@ -100,5 +102,59 @@ export class AdminController {
       maintenanceMessage: currentStatus.maintenanceMessage,
     });
     return { message: 'Maintenance warning disabled' };
+  }
+
+  // Endpoints para configuración de perfil de admin
+  @Get('profile')
+  async getAdminProfile(@Request() req) {
+    return await this.adminService.getAdminProfile(req.user.id);
+  }
+
+  @Put('profile')
+  async updateAdminProfile(@Request() req, @Body() dto: UpdateAdminProfileDto) {
+    return await this.adminService.updateAdminProfile(req.user.id, dto);
+  }
+
+  @Post('profile/change-password')
+  async changeAdminPassword(@Request() req, @Body() dto: ChangePasswordDto) {
+    await this.adminService.changeAdminPassword(req.user.id, dto);
+    return { message: 'Password changed successfully' };
+  }
+
+  @Get('profile/security')
+  async getSecuritySettings(@Request() req) {
+    return await this.adminService.getAdminSecurityInfo(req.user.id);
+  }
+
+  // Nuevos endpoints para funcionalidades avanzadas de sistema
+  @Get('database/info')
+  async getDatabaseInfo() {
+    return await this.adminService.getDatabaseInfo();
+  }
+
+  @Post('database/backup')
+  async createDatabaseBackup() {
+    return await this.adminService.createDatabaseBackup();
+  }
+
+  @Post('database/optimize')
+  async optimizeDatabase() {
+    return await this.adminService.optimizeDatabase();
+  }
+
+  @Get('logs')
+  async getSystemLogs(@Query('limit') limit?: string) {
+    const logLimit = limit ? parseInt(limit, 10) : 50;
+    return await this.adminService.getSystemLogs(logLimit);
+  }
+
+  @Get('environment')
+  async getEnvironmentVariables() {
+    return await this.adminService.getEnvironmentVariables();
+  }
+
+  @Get('system/metrics')
+  async getSystemMetrics() {
+    return await this.adminService.getSystemMetrics();
   }
 }

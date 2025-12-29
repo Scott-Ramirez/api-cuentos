@@ -15,6 +15,7 @@ export interface IStoryRepository {
   delete(id: number): Promise<void>;
   deleteByUserId(userId: number): Promise<void>;
   incrementViews(id: number): Promise<void>;
+  count(): Promise<number>;
   
   // Chapters
   addChapter(storyId: number, chapter: Partial<Chapter>): Promise<Chapter>;

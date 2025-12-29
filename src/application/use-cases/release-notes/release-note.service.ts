@@ -69,4 +69,12 @@ export class ReleaseNoteService {
     const activeNotes = await this.findActiveNotes();
     return activeNotes.length > 0 ? activeNotes[0] : null;
   }
+
+  // Método para obtener release notes recientes para notificaciones
+  async getRecentReleaseNotes(fromDate: Date): Promise<ReleaseNote[]> {
+    const allActiveNotes = await this.findActiveNotes();
+    return allActiveNotes.filter(note => 
+      new Date(note.releaseDate) >= fromDate
+    ).sort((a, b) => new Date(b.releaseDate).getTime() - new Date(a.releaseDate).getTime());
+  }
 }

@@ -138,4 +138,8 @@ export class StoryRepository implements IStoryRepository {
   async removeTags(storyId: number): Promise<void> {
     await this.tagRepo.delete({ story_id: storyId });
   }
+
+  async count(): Promise<number> {
+    return await this.storyRepo.count();
+  }
 }

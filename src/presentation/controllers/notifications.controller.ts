@@ -6,6 +6,7 @@ import { CreateNotificationUseCase } from '../../application/use-cases/notificat
 import { GetUserNotificationsUseCase } from '../../application/use-cases/notifications/get-user-notifications.use-case';
 import { MarkNotificationAsReadUseCase } from '../../application/use-cases/notifications/mark-notification-as-read.use-case';
 import { GetUnreadCountUseCase } from '../../application/use-cases/notifications/get-unread-count.use-case';
+import { ReleaseNoteService } from '../../application/use-cases/release-notes/release-note.service';
 
 @ApiTags('Notifications')
 @Controller('notifications')
@@ -16,6 +17,7 @@ export class NotificationsController {
     private readonly getUserNotificationsUseCase: GetUserNotificationsUseCase,
     private readonly markNotificationAsReadUseCase: MarkNotificationAsReadUseCase,
     private readonly getUnreadCountUseCase: GetUnreadCountUseCase,
+    private readonly releaseNoteService: ReleaseNoteService,
   ) {}
 
   @Get()
@@ -121,5 +123,52 @@ export class NotificationsController {
   async markAllAsRead(@CurrentUser() user: any) {
     await this.markNotificationAsReadUseCase.executeAll(user.id);
     return { message: 'All notifications marked as read' };
+  }
+
+  @Get('release-notes')
+  @ApiOperation({ 
+    summary: 'Obtener release notes como notificaciones',
+    description: 'Obtiene las últimas release notes para mostrar como notificaciones a usuarios autenticados.'
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Lista de release notes recientes',
+    schema: {
+      example: [{
+        id: 1,
+        title: 'Nueva funcionalidad',
+        version: '1.2.0',
+        type: 'minor',
+        releaseDate: '2025-12-28T00:00:00.000Z',
+        summary: 'Descripción breve de las nuevas funcionalidades',
+        isNew: true
+      }]
+    }
+  })
+  async getReleaseNotesAsNotifications(@CurrentUser() user: any) {
+    // Obtener release notes publicadas de los últimos 30 días
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const releaseNotes = await this.releaseNoteService.getRecentReleaseNotes(thirtyDaysAgo);
+    
+    // Formatear como notificaciones
+    return releaseNotes.map(note => ({
+      id: note.id,
+      title: `${note.version} - ${note.title}`,
+      type: 'release_note',
+      releaseType: note.type,
+      summary: note.content.length > 200 ? note.content.substring(0, 200) + '...' : note.content,
+      releaseDate: note.releaseDate,
+      version: note.version,
+      isNew: this.isReleaseNoteNew(note.releaseDate),
+      priority: note.priority || 'normal'
+    }));
+  }
+
+  private isReleaseNoteNew(releaseDate: Date): boolean {
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return new Date(releaseDate) > sevenDaysAgo;
   }
 }

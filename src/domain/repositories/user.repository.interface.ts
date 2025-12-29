@@ -7,6 +7,7 @@ export interface IUserRepository {
   findByUsername(username: string): Promise<User | null>;
   update(id: number, user: Partial<User>): Promise<User>;
   delete(id: number): Promise<void>;
+  count(): Promise<number>;
 }
 
 export const IUserRepository = Symbol('IUserRepository');

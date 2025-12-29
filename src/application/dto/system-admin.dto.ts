@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsBoolean } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsBoolean, IsEmail, MinLength } from 'class-validator';
 
 export class UpdateSystemSettingDto {
   @IsString()
@@ -34,4 +34,34 @@ export class MaintenanceControlDto {
   @IsOptional()
   @IsString()
   warningMessage?: string;
+}
+
+export class UpdateAdminProfileDto {
+  @IsOptional()
+  @IsString()
+  username?: string;
+
+  @IsOptional()
+  @IsEmail()
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  currentPassword: string;
+
+  @IsString()
+  @MinLength(6)
+  newPassword: string;
+
+  @IsString()
+  confirmPassword: string;
 }
