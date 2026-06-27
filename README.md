@@ -103,7 +103,7 @@ npm run start:prod
 Con el servidor corriendo, accede a Swagger en:
 
 ```
-http://localhost:3000/api
+http://localhost:3000/api/docs
 ```
 
 ## Módulos principales
