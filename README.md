@@ -1,98 +1,150 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# api-cuentos
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API para la plataforma de cuentos digitales. Construida con **NestJS**, **TypeORM** y **MySQL**, siguiendo principios de **Clean Architecture**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tecnologías
 
-## Description
+- **Runtime:** Node.js + TypeScript
+- **Framework:** NestJS 11
+- **Base de datos:** MySQL (TypeORM 0.3)
+- **Autenticación:** JWT + Passport
+- **Documentación:** Swagger / OpenAPI
+- **Validación:** class-validator + class-transformer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Arquitectura
 
-## Project setup
-
-```bash
-$ npm install
+```
+src/
+├── domain/               # Entidades del negocio e interfaces de repositorio
+│   ├── entities/
+│   └── repositories/
+├── application/          # Casos de uso, módulos y DTOs
+│   ├── modules/
+│   ├── use-cases/
+│   │   ├── admin/        # 6 servicios especializados de administración
+│   │   ├── auth/
+│   │   ├── comments/
+│   │   ├── likes/
+│   │   ├── notifications/
+│   │   ├── release-notes/
+│   │   └── stories/
+│   └── dto/
+├── infrastructure/       # Implementaciones de repositorios y configuración BD
+│   ├── database/
+│   │   ├── migrations/
+│   │   └── typeorm/
+│   │       ├── entities/   # Schemas TypeORM
+│   │       └── repositories/
+│   └── file-storage/
+└── presentation/         # Controllers, Guards y Decoradores
+    ├── controllers/
+    ├── guards/
+    └── dto/
 ```
 
-## Compile and run the project
+## Requisitos previos
+
+- Node.js >= 18
+- MySQL >= 8
+- npm >= 9
+
+## Configuración
 
 ```bash
-# development
-$ npm run start
+# Clonar e instalar dependencias
+npm install
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Copiar el archivo de entorno y completar los valores
+cp .env.example .env
 ```
 
-## Run tests
+Variables de entorno requeridas en `.env`:
+
+| Variable | Descripción |
+|---|---|
+| `DATABASE_HOST` | Host del servidor MySQL |
+| `DATABASE_PORT` | Puerto MySQL (default: 3306) |
+| `DATABASE_USER` | Usuario de la base de datos |
+| `DATABASE_PASSWORD` | Contraseña de la base de datos |
+| `DATABASE_NAME` | Nombre de la base de datos |
+| `JWT_SECRET` | Secreto para firmar tokens JWT |
+| `JWT_EXPIRES_IN` | Expiración del token (ej: `7d`) |
+| `CORS_ORIGINS` | Orígenes permitidos separados por coma |
+
+## Base de datos
 
 ```bash
-# unit tests
-$ npm run test
+# Correr todas las migraciones pendientes
+npm run migration:run
 
-# e2e tests
-$ npm run test:e2e
+# Revertir la última migración
+npm run migration:revert
 
-# test coverage
-$ npm run test:cov
+# Generar una nueva migración basada en cambios de entidades
+npm run migration:generate -- src/infrastructure/database/migrations/NombreMigracion
+
+# Crear un archivo de migración vacío
+npm run migration:create -- src/infrastructure/database/migrations/NombreMigracion
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Levantar el servidor
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+# Desarrollo con hot-reload
+npm run start:dev
+
+# Producción
+npm run build
+npm run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Documentación de la API
 
-## Resources
+Con el servidor corriendo, accede a Swagger en:
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+http://localhost:3000/api
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Módulos principales
 
-## Support
+| Módulo | Endpoints base | Descripción |
+|---|---|---|
+| Auth | `/auth` | Registro, login, perfil |
+| Stories | `/stories` | CRUD de cuentos y capítulos |
+| Comments | `/stories/:id/comments` | Comentarios y respuestas |
+| Likes | `/stories/:id/likes` | Sistema de likes |
+| Notifications | `/notifications` | Notificaciones de usuario |
+| Release Notes | `/release-notes` | Notas de versión públicas |
+| Admin | `/admin` | Panel de administración |
+| Version | `/version` | Estado y versión del sistema |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Crear usuario administrador
 
-## Stay in touch
+```bash
+npm run create-admin
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Tests
 
-## License
+```bash
+# Unit tests
+npm run test
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# E2E tests
+npm run test:e2e
+
+# Cobertura
+npm run test:cov
+```
+
+## Changelog
+
+### v2.0.0
+- Refactorización completa siguiendo Clean Architecture
+- `AdminService` (860 líneas) dividido en 6 servicios especializados
+- Dependencias actualizadas a versiones estables más recientes
+- Unificación de variables de entorno a convención `DATABASE_*`
+- Eliminación de carpetas legacy duplicadas
+- Corrección de bugs en estadísticas del sistema
+- Mejora de seguridad en backup de base de datos
