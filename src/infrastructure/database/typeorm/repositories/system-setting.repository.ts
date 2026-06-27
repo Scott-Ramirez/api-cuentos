@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { SystemSetting } from '../../../domain/entities';
-import { SystemSettingSchema } from './entities/system-setting.schema';
-import { SystemSettingRepository } from '../../../domain/repositories';
+import { SystemSetting } from '../../../../domain/entities';
+import { SystemSettingSchema } from '../entities/system-setting.schema';
+import { SystemSettingRepository } from '../../../../domain/repositories';
 
 @Injectable()
 export class TypeOrmSystemSettingRepository implements SystemSettingRepository {

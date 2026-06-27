@@ -4,7 +4,7 @@ import { ReleaseNoteSchema } from '../../infrastructure/database/typeorm/entitie
 import { ReleaseNoteService } from '../use-cases/release-notes/release-note.service';
 import { ReleaseNoteController } from '../../presentation/controllers/release-note.controller';
 import { PublicReleaseNoteController } from '../../presentation/controllers/public-release-note.controller';
-import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/release-note.repository';
+import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/repositories/release-note.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ReleaseNoteSchema])],

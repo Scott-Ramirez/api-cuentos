@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThanOrEqual } from 'typeorm';
-import { ReleaseNote } from '../../../domain/entities';
-import { ReleaseNoteSchema } from './entities/release-note.schema';
-import { ReleaseNoteRepository } from '../../../domain/repositories';
+import { ReleaseNote } from '../../../../domain/entities';
+import { ReleaseNoteSchema } from '../entities/release-note.schema';
+import { ReleaseNoteRepository } from '../../../../domain/repositories';
 
 @Injectable()
 export class TypeOrmReleaseNoteRepository implements ReleaseNoteRepository {

@@ -6,42 +6,47 @@ import { UserSchema } from '../../infrastructure/database/typeorm/entities/user.
 import { StorySchema } from '../../infrastructure/database/typeorm/entities/story.schema';
 import { ChapterSchema } from '../../infrastructure/database/typeorm/entities/chapter.schema';
 import { StoryTagSchema } from '../../infrastructure/database/typeorm/entities/story-tag.schema';
-import { AdminService } from '../use-cases/admin/admin.service';
 import { AdminController } from '../../presentation/controllers/admin.controller';
 import { VersionController } from '../../presentation/controllers/version.controller';
-import { TypeOrmSystemSettingRepository } from '../../infrastructure/database/typeorm/system-setting.repository';
-import { ReleaseNoteService } from '../use-cases/release-notes/release-note.service';
-import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/release-note.repository';
-import { MakeAdminCommand } from '../commands/make-admin.command';
-import { IStoryRepository } from '../../domain/repositories/story.repository.interface';
-import { IUserRepository } from '../../domain/repositories/user.repository.interface';
+import { TypeOrmSystemSettingRepository } from '../../infrastructure/database/typeorm/repositories/system-setting.repository';
+import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/repositories/release-note.repository';
 import { StoryRepository } from '../../infrastructure/database/typeorm/repositories/story.repository';
 import { UserRepository } from '../../infrastructure/database/typeorm/repositories/user.repository';
+import { MakeAdminCommand } from '../commands/make-admin.command';
+import { ReleaseNoteService } from '../use-cases/release-notes/release-note.service';
+import { MaintenanceService } from '../use-cases/admin/maintenance.service';
+import { SystemSettingsService } from '../use-cases/admin/system-settings.service';
+import { SystemStatsService } from '../use-cases/admin/system-stats.service';
+import { AdminProfileService } from '../use-cases/admin/admin-profile.service';
+import { DatabaseManagementService } from '../use-cases/admin/database-management.service';
+import { SystemMonitoringService } from '../use-cases/admin/system-monitoring.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SystemSettingSchema, ReleaseNoteSchema, UserSchema, StorySchema, ChapterSchema, StoryTagSchema])],
+  imports: [
+    TypeOrmModule.forFeature([
+      SystemSettingSchema,
+      ReleaseNoteSchema,
+      UserSchema,
+      StorySchema,
+      ChapterSchema,
+      StoryTagSchema,
+    ]),
+  ],
   controllers: [AdminController, VersionController],
   providers: [
-    AdminService,
-    ReleaseNoteService,
     MakeAdminCommand,
-    {
-      provide: 'SystemSettingRepository',
-      useClass: TypeOrmSystemSettingRepository,
-    },
-    {
-      provide: 'ReleaseNoteRepository',
-      useClass: TypeOrmReleaseNoteRepository,
-    },
-    {
-      provide: 'IStoryRepository',
-      useClass: StoryRepository,
-    },
-    {
-      provide: 'IUserRepository',
-      useClass: UserRepository,
-    },
+    ReleaseNoteService,
+    MaintenanceService,
+    SystemSettingsService,
+    SystemStatsService,
+    AdminProfileService,
+    DatabaseManagementService,
+    SystemMonitoringService,
+    { provide: 'SystemSettingRepository', useClass: TypeOrmSystemSettingRepository },
+    { provide: 'ReleaseNoteRepository', useClass: TypeOrmReleaseNoteRepository },
+    { provide: 'IStoryRepository', useClass: StoryRepository },
+    { provide: 'IUserRepository', useClass: UserRepository },
   ],
-  exports: [AdminService, ReleaseNoteService, MakeAdminCommand],
+  exports: [MaintenanceService, SystemSettingsService, ReleaseNoteService, MakeAdminCommand],
 })
 export class AdminModule {}

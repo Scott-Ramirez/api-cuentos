@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificationSchema } from '../../infrastructure/database/typeorm/entities/notification.schema';
 import { ReleaseNoteSchema } from '../../infrastructure/database/typeorm/entities/release-note.schema';
 import { NotificationRepository } from '../../infrastructure/database/typeorm/repositories/notification.repository';
-import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/release-note.repository';
+import { TypeOrmReleaseNoteRepository } from '../../infrastructure/database/typeorm/repositories/release-note.repository';
 import { INotificationRepository } from '../../domain/repositories';
 import { CreateNotificationUseCase } from '../use-cases/notifications/create-notification.use-case';
 import { GetUserNotificationsUseCase } from '../use-cases/notifications/get-user-notifications.use-case';

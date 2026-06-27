@@ -3,70 +3,79 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
   Query,
   UseGuards,
   Request,
   Put,
 } from '@nestjs/common';
-import { AdminService } from '../../application/use-cases/admin/admin.service';
-import { UpdateSystemSettingDto, MaintenanceControlDto, UpdateAdminProfileDto, ChangePasswordDto } from '../../application/dto/system-admin.dto';
+import { MaintenanceService } from '../../application/use-cases/admin/maintenance.service';
+import { SystemSettingsService } from '../../application/use-cases/admin/system-settings.service';
+import { SystemStatsService } from '../../application/use-cases/admin/system-stats.service';
+import { AdminProfileService } from '../../application/use-cases/admin/admin-profile.service';
+import { DatabaseManagementService } from '../../application/use-cases/admin/database-management.service';
+import { SystemMonitoringService } from '../../application/use-cases/admin/system-monitoring.service';
+import {
+  UpdateSystemSettingDto,
+  MaintenanceControlDto,
+  UpdateAdminProfileDto,
+  ChangePasswordDto,
+} from '../../application/dto/system-admin.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { AdminGuard } from '../guards/admin.guard';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly maintenanceService: MaintenanceService,
+    private readonly systemSettingsService: SystemSettingsService,
+    private readonly systemStatsService: SystemStatsService,
+    private readonly adminProfileService: AdminProfileService,
+    private readonly databaseService: DatabaseManagementService,
+    private readonly monitoringService: SystemMonitoringService,
+  ) {}
 
   @Get('dashboard')
   async getDashboard() {
     const [stats, settings, maintenance] = await Promise.all([
-      this.adminService.getSystemStats(),
-      this.adminService.getSystemSettings(),
-      this.adminService.getMaintenanceStatus(),
+      this.systemStatsService.getSystemStats(),
+      this.systemSettingsService.getSystemSettings(),
+      this.maintenanceService.getMaintenanceStatus(),
     ]);
-
-    return {
-      stats,
-      settings,
-      maintenance,
-    };
+    return { stats, settings, maintenance };
   }
 
   @Get('stats')
   async getSystemStats() {
-    return await this.adminService.getSystemStats();
+    return this.systemStatsService.getSystemStats();
   }
 
   @Get('settings')
   async getSystemSettings(@Query('category') category?: string) {
-    if (category) {
-      return await this.adminService.getSystemSettingsByCategory(category);
-    }
-    return await this.adminService.getSystemSettings();
+    return category
+      ? this.systemSettingsService.getSystemSettingsByCategory(category)
+      : this.systemSettingsService.getSystemSettings();
   }
 
   @Post('settings')
   async updateSystemSetting(@Body() dto: UpdateSystemSettingDto) {
-    return await this.adminService.updateSystemSetting(dto);
+    return this.systemSettingsService.updateSystemSetting(dto);
   }
 
   @Get('maintenance')
   async getMaintenanceStatus() {
-    return await this.adminService.getMaintenanceStatus();
+    return this.maintenanceService.getMaintenanceStatus();
   }
 
   @Post('maintenance')
   async updateMaintenanceSettings(@Body() dto: MaintenanceControlDto) {
-    await this.adminService.updateMaintenanceSettings(dto);
+    await this.maintenanceService.updateMaintenanceSettings(dto);
     return { message: 'Maintenance settings updated successfully' };
   }
 
   @Post('maintenance/enable')
   async enableMaintenance(@Body('message') message?: string) {
-    await this.adminService.updateMaintenanceSettings({
+    await this.maintenanceService.updateMaintenanceSettings({
       maintenanceWarning: false,
       maintenanceActive: true,
       maintenanceMessage: message,
@@ -76,7 +85,7 @@ export class AdminController {
 
   @Post('maintenance/disable')
   async disableMaintenance() {
-    await this.adminService.updateMaintenanceSettings({
+    await this.maintenanceService.updateMaintenanceSettings({
       maintenanceWarning: false,
       maintenanceActive: false,
     });
@@ -85,7 +94,7 @@ export class AdminController {
 
   @Post('maintenance/warning')
   async enableMaintenanceWarning(@Body('message') message?: string) {
-    await this.adminService.updateMaintenanceSettings({
+    await this.maintenanceService.updateMaintenanceSettings({
       maintenanceWarning: true,
       maintenanceActive: false,
       warningMessage: message,
@@ -95,66 +104,63 @@ export class AdminController {
 
   @Post('maintenance/warning/disable')
   async disableMaintenanceWarning() {
-    const currentStatus = await this.adminService.getMaintenanceStatus();
-    await this.adminService.updateMaintenanceSettings({
+    const current = await this.maintenanceService.getMaintenanceStatus();
+    await this.maintenanceService.updateMaintenanceSettings({
       maintenanceWarning: false,
-      maintenanceActive: currentStatus.maintenanceActive,
-      maintenanceMessage: currentStatus.maintenanceMessage,
+      maintenanceActive: current.maintenanceActive,
+      maintenanceMessage: current.maintenanceMessage,
     });
     return { message: 'Maintenance warning disabled' };
   }
 
-  // Endpoints para configuración de perfil de admin
   @Get('profile')
   async getAdminProfile(@Request() req) {
-    return await this.adminService.getAdminProfile(req.user.id);
+    return this.adminProfileService.getAdminProfile(req.user.id);
   }
 
   @Put('profile')
   async updateAdminProfile(@Request() req, @Body() dto: UpdateAdminProfileDto) {
-    return await this.adminService.updateAdminProfile(req.user.id, dto);
+    return this.adminProfileService.updateAdminProfile(req.user.id, dto);
   }
 
   @Post('profile/change-password')
   async changeAdminPassword(@Request() req, @Body() dto: ChangePasswordDto) {
-    await this.adminService.changeAdminPassword(req.user.id, dto);
+    await this.adminProfileService.changeAdminPassword(req.user.id, dto);
     return { message: 'Password changed successfully' };
   }
 
   @Get('profile/security')
   async getSecuritySettings(@Request() req) {
-    return await this.adminService.getAdminSecurityInfo(req.user.id);
+    return this.adminProfileService.getAdminSecurityInfo(req.user.id);
   }
 
-  // Nuevos endpoints para funcionalidades avanzadas de sistema
   @Get('database/info')
   async getDatabaseInfo() {
-    return await this.adminService.getDatabaseInfo();
+    return this.databaseService.getDatabaseInfo();
   }
 
   @Post('database/backup')
   async createDatabaseBackup() {
-    return await this.adminService.createDatabaseBackup();
+    return this.databaseService.createDatabaseBackup();
   }
 
   @Post('database/optimize')
   async optimizeDatabase() {
-    return await this.adminService.optimizeDatabase();
+    return this.databaseService.optimizeDatabase();
   }
 
   @Get('logs')
   async getSystemLogs(@Query('limit') limit?: string) {
-    const logLimit = limit ? parseInt(limit, 10) : 50;
-    return await this.adminService.getSystemLogs(logLimit);
+    return this.monitoringService.getSystemLogs(limit ? parseInt(limit, 10) : 50);
   }
 
   @Get('environment')
   async getEnvironmentVariables() {
-    return await this.adminService.getEnvironmentVariables();
+    return this.monitoringService.getEnvironmentVariables();
   }
 
   @Get('system/metrics')
   async getSystemMetrics() {
-    return await this.adminService.getSystemMetrics();
+    return this.monitoringService.getSystemMetrics();
   }
 }
