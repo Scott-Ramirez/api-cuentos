@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ReleaseNoteService } from '../../application/use-cases/release-notes/release-note.service';
 
+@ApiTags('Release Notes')
 @Controller('release-notes')
 export class PublicReleaseNoteController {
   constructor(private readonly releaseNoteService: ReleaseNoteService) {}

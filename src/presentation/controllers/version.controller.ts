@@ -1,9 +1,11 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { join } from 'path';
 import * as fs from 'fs';
 import { ReleaseNoteService } from '../../application/use-cases/release-notes/release-note.service';
 import { MaintenanceService } from '../../application/use-cases/admin/maintenance.service';
 
+@ApiTags('Version')
 @Controller('version')
 export class VersionController {
   constructor(
