@@ -8,8 +8,9 @@ function parseCorsOrigins(envOrigins?: string): (string | RegExp)[] {
   if (!envOrigins) {
     // Default to localhost for dev
     return [
-      'http://localhost:3001',
       'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5000',
       /https:\/\/.*\.ngrok-free\.app$/,
       /https:\/\/.*\.ngrok\.io$/,
     ];
@@ -52,7 +53,7 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  logger.log(`🚀 StoryForge API running on http://localhost:${port}`);
+  logger.log(`🚀 API - cuentos running on http://localhost:${port}`);
   logger.log(`📚 Swagger Docs available at http://localhost:${port}/api/docs`);
 }
 bootstrap();
